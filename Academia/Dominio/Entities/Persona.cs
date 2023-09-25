@@ -10,5 +10,5 @@ public class Persona
     public string Telefono { get; set; }
     public int Legajo { get; set; }
     public DateTime FechaNacimiento { get; set; }
-    public Plan Plan { get; set; }
+    public Plan? Plan { get; set; }
 }

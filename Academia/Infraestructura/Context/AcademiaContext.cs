@@ -17,7 +17,32 @@ public class AcademiaContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=MS-03\SQLEXPRESS;Initial Catalog=AcademiaDB_1;User Id=net;Password=net;Database=AcademiaDB_1;TrustServerCertificate=True;");
+        // var server = "MS-03\\SQLEXPRESS";
+        var server = @"DESKTOP-DO7U7JF\SQLEXPRESS";
+
+        var databaseName = "AcademiaDB_1";
+        //var userId = "net";
+        var userId = "sa";
+        //var password = "net";
+        var password = "";
+        
+        //var connectionString = @$"
+        //        Server=${server};
+        //        Initial Catalog={databaseName};
+        //        User Id={userId};
+        //        Password={password};
+        //        Database={databaseName};
+        //        TrustServerCertificate=True;";
+
+        var connectionString = @$"
+                Server={server};
+                Initial Catalog={databaseName};
+                Database={databaseName};
+                Integrated Security=True;
+                TrustServerCertificate=True;";
+
+        optionsBuilder.UseSqlServer(connectionString);
+        
         optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
     }
 }

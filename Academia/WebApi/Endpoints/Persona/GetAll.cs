@@ -1,12 +1,14 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
+using WebApi.DTO.Mappers;
+using WebApi.DTO.Respone;
 
 namespace WebApi.Endpoints;
 
 public class GetAll : EndpointBaseAsync
     .WithoutRequest
-    .WithActionResult<List<Guid>>
+    .WithActionResult<List<PersonaResponse>>
 {
     private readonly IPersonaService _personaService;
 
@@ -16,9 +18,10 @@ public class GetAll : EndpointBaseAsync
     }
 
     [HttpGet("api/personas")]
-    public async override Task<ActionResult<List<Guid>>> HandleAsync(CancellationToken cancellationToken = default)
+    public async override Task<ActionResult<List<PersonaResponse>>> HandleAsync(CancellationToken cancellationToken = default)
     {
-        var list = await _personaService.GetAllAsync(cancellationToken);
-        return list.Select(x => x.Id).ToList();
+        var results = await _personaService.GetAllAsync(cancellationToken);
+
+        return results.Select(x => x.MapDtoToResponse()).ToList();
     }
 }

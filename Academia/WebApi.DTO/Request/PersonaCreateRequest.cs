@@ -1,6 +1,12 @@
-﻿namespace WebApi.DTO.Persona
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace WebApi.DTO.Request
 {
-    public class CreateDto
+    public class PersonaCreateRequest
     {
         public string Nombre { get; set; }
         public string Apellido { get; set; }
