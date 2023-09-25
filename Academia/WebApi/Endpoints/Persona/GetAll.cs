@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 using WebApi.DTO.Mappers;
-using WebApi.DTO.Respone;
+using WebApi.DTO.Response;
 
 namespace WebApi.Endpoints;
 

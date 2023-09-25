@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 using WebApi.DTO.Request;
-using WebApi.DTO.Respone;
+using WebApi.DTO.Response;
 
 namespace WebApi.Endpoints.Persona
 {
