@@ -18,7 +18,8 @@ public class AcademiaContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         // var server = "MS-03\\SQLEXPRESS";
-        var server = @"DESKTOP-DO7U7JF\SQLEXPRESS";
+        //var server = @"DESKTOP-DO7U7JF\SQLEXPRESS";
+        var server = @".\SQLEXPRESS";
 
         var databaseName = "AcademiaDB_1";
         //var userId = "net";
