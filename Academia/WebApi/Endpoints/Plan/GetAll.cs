@@ -4,15 +4,15 @@ using Services.Contracts;
 using WebApi.DTO.Mappers;
 using WebApi.DTO.Response;
 
-namespace WebApi.Endpoints;
+namespace WebApi.Endpoints.Plan;
 
-public class GetAll3 : EndpointBaseAsync
+public class GetAll : EndpointBaseAsync
     .WithoutRequest
     .WithActionResult<List<PlanResponse>>
 {
     private readonly IPlanService _planService;
 
-    public GetAll3(IPlanService planService)
+    public GetAll(IPlanService planService)
     {
         _planService = planService;
     }

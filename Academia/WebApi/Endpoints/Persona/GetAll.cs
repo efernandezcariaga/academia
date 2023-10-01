@@ -4,7 +4,7 @@ using Services.Contracts;
 using WebApi.DTO.Mappers;
 using WebApi.DTO.Response;
 
-namespace WebApi.Endpoints;
+namespace WebApi.Endpoints.Persona;
 
 public class GetAll : EndpointBaseAsync
     .WithoutRequest

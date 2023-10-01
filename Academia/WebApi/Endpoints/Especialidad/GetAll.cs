@@ -4,15 +4,15 @@ using Services.Contracts;
 using WebApi.DTO.Mappers;
 using WebApi.DTO.Response;
 
-namespace WebApi.Endpoints;
+namespace WebApi.Endpoints.Especialidad;
 
-public class GetAll2 : EndpointBaseAsync
+public class GetAll : EndpointBaseAsync
     .WithoutRequest
     .WithActionResult<List<EspecialidadResponse>>
 {
     private readonly IEspecialidadService _especialidadService;
 
-    public GetAll2(IEspecialidadService especialidadService)
+    public GetAll(IEspecialidadService especialidadService)
     {
         _especialidadService = especialidadService;
     }
