@@ -27,6 +27,55 @@ namespace Desktop.Helpers
             return await FromHttpResponseMessage<T>(result);
         }
 
+        public static async Task<T> PostAsync<T>(string uri, object requestDataToSend)
+        where T : class
+        {
+            using var _httpClient = new HttpClient();
+
+            var content = ToJson(requestDataToSend);
+
+            var result = await _httpClient.PostAsync($"{_apiUrl}/{uri}", content);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await FromHttpResponseMessage<T>(result);
+        }
+
+        public static async Task<T> PutAsync<T>(string uri, object requestDataToSend)
+        where T : class
+        {
+            using var _httpClient = new HttpClient();
+
+            var content = ToJson(requestDataToSend);
+
+            var result = await _httpClient.PutAsync($"{_apiUrl}/{uri}", content);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await FromHttpResponseMessage<T>(result);
+        }
+
+        public static async Task<T> DeleteAsync<T>(string uri, Guid id)
+        where T : class
+        {
+            using var _httpClient = new HttpClient();
+
+            var result = await _httpClient.DeleteAsync($"{_apiUrl}/{uri}/{id}");
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await FromHttpResponseMessage<T>(result);
+        }
+
         private static async Task<T> FromHttpResponseMessage<T>(HttpResponseMessage result)
         {
             #pragma warning disable CS8603 // Possible null reference return.
@@ -35,6 +84,11 @@ namespace Desktop.Helpers
                 PropertyNameCaseInsensitive = true,
             });
             #pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        private static StringContent ToJson(object obj)
+        {
+            return new StringContent(JsonSerializer.Serialize(obj), Encoding.UTF8, "application/json");
         }
     }
 }

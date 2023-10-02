@@ -8,7 +8,7 @@ namespace WebApi.Endpoints.Plan
 {
     public class Update : EndpointBaseAsync
         .WithRequest<PlanUpdateRequest>
-        .WithActionResult<bool>
+        .WithActionResult<BooleanResultResponse>
     {
         private readonly IPlanService _planService;
         public Update(IPlanService planService)
@@ -17,9 +17,11 @@ namespace WebApi.Endpoints.Plan
         }
 
         [HttpPut("api/planes")]
-        public async override Task<ActionResult<bool>> HandleAsync(PlanUpdateRequest request, CancellationToken cancellationToken = default)
+        public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(PlanUpdateRequest request, CancellationToken cancellationToken = default)
         {
-            return await _planService.UpdatePlanAsync(request, cancellationToken);
+            var result = await _planService.UpdatePlanAsync(request, cancellationToken);
+
+            return Ok(new BooleanResultResponse { Result = result });
         }
     }
 }

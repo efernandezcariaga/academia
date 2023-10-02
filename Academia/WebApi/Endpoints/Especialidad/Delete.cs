@@ -1,12 +1,13 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
+using WebApi.DTO.Response;
 
 namespace WebApi.Endpoints.Especialidad
 {
     public class Delete : EndpointBaseAsync
         .WithRequest<Guid>
-        .WithActionResult<bool>
+        .WithActionResult<BooleanResultResponse>
     {
         private readonly IEspecialidadService _especialidadService;
         public Delete(IEspecialidadService especialidadService)
@@ -14,12 +15,12 @@ namespace WebApi.Endpoints.Especialidad
             _especialidadService = especialidadService;
         }
 
-        [HttpDelete("api/especialidades")]
-        public async override Task<ActionResult<bool>> HandleAsync(Guid id, CancellationToken cancellationToken = default)
+        [HttpDelete("api/especialidades/{id}")]
+        public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await _especialidadService.DeleteEspecialidadAsync(id, cancellationToken);
+            var result = await _especialidadService.DeleteEspecialidadAsync(id, cancellationToken);
 
-            return Ok(true);
+            return Ok(new BooleanResultResponse { Result = result });
         }
     }
 }

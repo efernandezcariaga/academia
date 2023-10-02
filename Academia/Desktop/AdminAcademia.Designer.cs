@@ -62,27 +62,29 @@
             // 
             entidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { personasToolStripMenuItem, especialidadesToolStripMenuItem, planesToolStripMenuItem });
             entidadesToolStripMenuItem.Name = "entidadesToolStripMenuItem";
-            entidadesToolStripMenuItem.Size = new Size(125, 22);
+            entidadesToolStripMenuItem.Size = new Size(180, 22);
             entidadesToolStripMenuItem.Text = "Entidades";
             // 
             // personasToolStripMenuItem
             // 
             personasToolStripMenuItem.Name = "personasToolStripMenuItem";
-            personasToolStripMenuItem.Size = new Size(150, 22);
+            personasToolStripMenuItem.Size = new Size(180, 22);
             personasToolStripMenuItem.Text = "Personas";
             personasToolStripMenuItem.Click += personasToolStripMenuItem_Click;
             // 
             // especialidadesToolStripMenuItem
             // 
             especialidadesToolStripMenuItem.Name = "especialidadesToolStripMenuItem";
-            especialidadesToolStripMenuItem.Size = new Size(150, 22);
+            especialidadesToolStripMenuItem.Size = new Size(180, 22);
             especialidadesToolStripMenuItem.Text = "Especialidades";
+            especialidadesToolStripMenuItem.Click += especialidadesToolStripMenuItem_Click;
             // 
             // planesToolStripMenuItem
             // 
             planesToolStripMenuItem.Name = "planesToolStripMenuItem";
-            planesToolStripMenuItem.Size = new Size(150, 22);
+            planesToolStripMenuItem.Size = new Size(180, 22);
             planesToolStripMenuItem.Text = "Planes";
+            planesToolStripMenuItem.Click += planesToolStripMenuItem_Click;
             // 
             // lblWelcomeHome
             // 
@@ -120,6 +122,7 @@
             btnShortcutAdmEspecialidades.TabIndex = 4;
             btnShortcutAdmEspecialidades.Text = "Administrar Especialidades";
             btnShortcutAdmEspecialidades.UseVisualStyleBackColor = true;
+            btnShortcutAdmEspecialidades.Click += btnShortcutAdmEspecialidades_Click;
             // 
             // btnShortcutAdmPlanes
             // 
@@ -129,6 +132,7 @@
             btnShortcutAdmPlanes.TabIndex = 5;
             btnShortcutAdmPlanes.Text = "Administrar Planes";
             btnShortcutAdmPlanes.UseVisualStyleBackColor = true;
+            btnShortcutAdmPlanes.Click += btnShortcutAdmPlanes_Click;
             // 
             // AdminAcademia
             // 

@@ -8,7 +8,7 @@ namespace WebApi.Endpoints.Especialidad
 {
     public class Update : EndpointBaseAsync
         .WithRequest<EspecialidadUpdateRequest>
-        .WithActionResult<bool>
+        .WithActionResult<BooleanResultResponse>
     {
         private readonly IEspecialidadService _especialidadService;
         public Update(IEspecialidadService especialidadService)
@@ -17,9 +17,11 @@ namespace WebApi.Endpoints.Especialidad
         }
 
         [HttpPut("api/especialidades")]
-        public async override Task<ActionResult<bool>> HandleAsync(EspecialidadUpdateRequest request, CancellationToken cancellationToken = default)
+        public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(EspecialidadUpdateRequest request, CancellationToken cancellationToken = default)
         {
-            return await _especialidadService.UpdateEspecialidadAsync(request, cancellationToken);
+            var result = await _especialidadService.UpdateEspecialidadAsync(request, cancellationToken);
+
+            return Ok(new BooleanResultResponse { Result = result });
         }
     }
 }

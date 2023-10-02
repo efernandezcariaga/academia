@@ -11,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AcademiaContext>();
 
 builder.Services.AddScoped<IPersonaService, PersonaService>();
+builder.Services.AddScoped<IEspecialidadService, EspecialidadService>();
+builder.Services.AddScoped<IPlanService, PlanService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

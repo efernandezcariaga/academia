@@ -57,6 +57,7 @@
             btnAddNew = new Button();
             btnClose = new Button();
             btnLoad = new Button();
+            btnCancelClean = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvPersonas).BeginInit();
             SuspendLayout();
             // 
@@ -260,12 +261,13 @@
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(365, 488);
+            btnSave.Location = new Point(365, 487);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(75, 23);
+            btnSave.Size = new Size(120, 23);
             btnSave.TabIndex = 25;
-            btnSave.Text = "Guardar";
+            btnSave.Text = "Guardar cambios";
             btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // btnDelete
             // 
@@ -275,6 +277,7 @@
             btnDelete.TabIndex = 26;
             btnDelete.Text = "Eliminar";
             btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
             // 
             // btnAddNew
             // 
@@ -284,6 +287,7 @@
             btnAddNew.TabIndex = 27;
             btnAddNew.Text = "Nuevo";
             btnAddNew.UseVisualStyleBackColor = true;
+            btnAddNew.Click += btnAddNew_Click;
             // 
             // btnClose
             // 
@@ -305,11 +309,22 @@
             btnLoad.UseVisualStyleBackColor = true;
             btnLoad.Click += btnLoad_Click;
             // 
+            // btnCancelClean
+            // 
+            btnCancelClean.Location = new Point(365, 459);
+            btnCancelClean.Name = "btnCancelClean";
+            btnCancelClean.Size = new Size(120, 23);
+            btnCancelClean.TabIndex = 30;
+            btnCancelClean.Text = "Cancelar / Limpiar";
+            btnCancelClean.UseVisualStyleBackColor = true;
+            btnCancelClean.Click += btnCancelClean_Click;
+            // 
             // AdminPersonas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(768, 531);
+            Controls.Add(btnCancelClean);
             Controls.Add(btnLoad);
             Controls.Add(btnClose);
             Controls.Add(btnAddNew);
@@ -377,5 +392,6 @@
         private Button btnAddNew;
         private Button btnClose;
         private Button btnLoad;
+        private Button btnCancelClean;
     }
 }

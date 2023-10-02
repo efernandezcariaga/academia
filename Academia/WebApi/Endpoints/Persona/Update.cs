@@ -8,7 +8,7 @@ namespace WebApi.Endpoints.Persona
 {
     public class Update : EndpointBaseAsync
         .WithRequest<PersonaUpdateRequest>
-        .WithActionResult<bool>
+        .WithActionResult<BooleanResultResponse>
     {
         private readonly IPersonaService _personaService;
         public Update(IPersonaService personaService)
@@ -17,9 +17,11 @@ namespace WebApi.Endpoints.Persona
         }
 
         [HttpPut("api/personas")]
-        public async override Task<ActionResult<bool>> HandleAsync(PersonaUpdateRequest request, CancellationToken cancellationToken = default)
+        public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(PersonaUpdateRequest request, CancellationToken cancellationToken = default)
         {
-            return await _personaService.UpdatePersonaAsync(request, cancellationToken);
+            var result = await _personaService.UpdatePersonaAsync(request, cancellationToken);
+
+            return Ok(new BooleanResultResponse { Result = result });
         }
     }
 }

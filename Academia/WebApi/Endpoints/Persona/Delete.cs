@@ -1,12 +1,13 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
+using WebApi.DTO.Response;
 
 namespace WebApi.Endpoints.Persona
 {
     public class Delete : EndpointBaseAsync
         .WithRequest<Guid>
-        .WithActionResult<bool>
+        .WithActionResult<BooleanResultResponse>
     {
         private readonly IPersonaService _personaService;
         public Delete(IPersonaService personaService)
@@ -14,12 +15,12 @@ namespace WebApi.Endpoints.Persona
             _personaService = personaService;
         }
 
-        [HttpDelete("api/personas")]
-        public async override Task<ActionResult<bool>> HandleAsync(Guid id, CancellationToken cancellationToken = default)
+        [HttpDelete("api/personas/{id}")]
+        public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await _personaService.DeletePersonaAsync(id, cancellationToken);
+            var result = await _personaService.DeletePersonaAsync(id, cancellationToken);
 
-            return Ok(true);
+            return Ok(new BooleanResultResponse { Result = result });
         }
     }
 }
