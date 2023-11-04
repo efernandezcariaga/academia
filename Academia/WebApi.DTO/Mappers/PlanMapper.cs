@@ -19,7 +19,8 @@ namespace WebApi.DTO.Mappers
             {
                 Id = dto.Id,
                 Descripcion = dto.Descripcion,
-                //Especialidad = dto.Especialidad,
+                EspecialidadId = dto.EspecialidadId,
+                EspecialidadDescripcion = dto.EspecialidadDescripcion,
             };
         }
 
@@ -29,7 +30,8 @@ namespace WebApi.DTO.Mappers
             {
                 Id = domain.Id,
                 Descripcion = domain.Descripcion,
-                //Especialidad = domain.Especialidad,
+                EspecialidadId = domain.Especialidad.Id,
+                EspecialidadDescripcion = domain.Especialidad.Descripcion,
             };
         }
 

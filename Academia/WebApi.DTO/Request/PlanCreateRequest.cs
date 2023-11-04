@@ -9,5 +9,6 @@ namespace WebApi.DTO.Request
     public class PlanCreateRequest
     {
         public string Descripcion { get ; set; }
+        public Guid EspecialidadId { get; set; }
     }
 }

@@ -10,6 +10,10 @@
         public string Telefono { get; set; }
         public int Legajo { get; set; }
         public DateTime FechaNacimiento { get; set; }
-        //public Plan? Plan { get; set; }
+        public PlanDto? Plan { get; set; }
+        public Guid PlanId { get; set; }
+        public string PlanDescripcion { get; set; }
+        public Guid EspecialidadId { get; set; }
+        public string EspecialidadDescripcion { get; set; }
     }
 }

@@ -40,6 +40,8 @@
             lblId = new Label();
             lblAdminPlanesHome = new Label();
             dgvPlanes = new DataGridView();
+            cmbEspecialidad = new ComboBox();
+            lblEspecialidad = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvPlanes).BeginInit();
             SuspendLayout();
             // 
@@ -157,11 +159,31 @@
             dgvPlanes.TabIndex = 31;
             dgvPlanes.CellClick += dgvPlanes_CellClick;
             // 
+            // cmbEspecialidad
+            // 
+            cmbEspecialidad.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbEspecialidad.FormattingEnabled = true;
+            cmbEspecialidad.Location = new Point(142, 289);
+            cmbEspecialidad.Name = "cmbEspecialidad";
+            cmbEspecialidad.Size = new Size(188, 23);
+            cmbEspecialidad.TabIndex = 44;
+            // 
+            // lblEspecialidad
+            // 
+            lblEspecialidad.AutoSize = true;
+            lblEspecialidad.Location = new Point(12, 292);
+            lblEspecialidad.Name = "lblEspecialidad";
+            lblEspecialidad.Size = new Size(72, 15);
+            lblEspecialidad.TabIndex = 43;
+            lblEspecialidad.Text = "Especialidad";
+            // 
             // AdminPlanes
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(768, 332);
+            Controls.Add(cmbEspecialidad);
+            Controls.Add(lblEspecialidad);
             Controls.Add(btnCancelClean);
             Controls.Add(btnLoad);
             Controls.Add(btnClose);
@@ -195,5 +217,7 @@
         private Label lblId;
         private Label lblAdminPlanesHome;
         private DataGridView dgvPlanes;
+        private ComboBox cmbEspecialidad;
+        private Label lblEspecialidad;
     }
 }

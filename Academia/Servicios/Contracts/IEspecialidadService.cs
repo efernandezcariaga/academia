@@ -7,6 +7,8 @@ public interface IEspecialidadService
 {
     Task<List<EspecialidadDto>> GetAllAsync(CancellationToken ct);
 
+    Task<List<EspecialidadDto>> GetAllByPlanIdAsync(Guid planId, CancellationToken ct);
+
     Task<EspecialidadDto?> GetByIdAsync(Guid id, CancellationToken ct);
 
     Task<EspecialidadDto> CreateEspecialidadAsync(EspecialidadCreateRequest request, CancellationToken ct);

@@ -21,6 +21,9 @@ public class PlanService : IPlanService
     {
         var planCreated = request.MapRequestToDomain();
 
+        var especialidad = await _context.Especialidades.FirstOrDefaultAsync(x => x.Id == request.EspecialidadId);
+        planCreated.Especialidad = especialidad;
+
         await _context.Planes.AddAsync(planCreated);
         await _context.SaveChangesAsync();
 
@@ -41,12 +44,12 @@ public class PlanService : IPlanService
 
     public async Task<List<PlanDto>> GetAllAsync(CancellationToken ct)
     {
-        return await _context.Planes.Select(x => x.MapDomainToDto()).ToListAsync(ct);
+        return await _context.Planes.Include(x => x.Especialidad).Select(x => x.MapDomainToDto()).ToListAsync(ct);
     }
 
     public async Task<PlanDto?> GetByIdAsync(Guid id, CancellationToken ct)
     {
-        var planById = await _context.Planes.FirstOrDefaultAsync(x => x.Id == id, ct);
+        var planById = await _context.Planes.Include(x => x.Especialidad).FirstOrDefaultAsync(x => x.Id == id, ct);
 
         return planById?.MapDomainToDto();
     }
@@ -58,7 +61,9 @@ public class PlanService : IPlanService
         if (planToUpdate == null) return false;
 
         planToUpdate.Descripcion = request.Descripcion;
-        // TBD: Especialidad
+
+        var especialidad = await _context.Especialidades.FirstOrDefaultAsync(x => x.Id == request.EspecialidadId);
+        planToUpdate.Especialidad = especialidad;
 
         await _context.SaveChangesAsync();
         return true;

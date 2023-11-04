@@ -11,6 +11,7 @@ namespace WebApi.DTO.Response
     {
         public Guid Id { get; set; }
         public string Descripcion { get; set; }
-        //public Especialidad Especialidad { get; set; }
+        public Guid EspecialidadId { get; set; }
+        public string EspecialidadDescripcion { get; set; }
     }
 }

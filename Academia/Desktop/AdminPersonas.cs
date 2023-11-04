@@ -12,33 +12,37 @@ using System.Windows.Forms;
 using WebApi.DTO.Dto;
 using WebApi.DTO.Request;
 using WebApi.DTO.Response;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace Desktop
 {
     public partial class AdminPersonas : Form
     {
-        private List<PersonaDto> _personas;
-        private PersonaDto? _selectedItem;
+        private List<PersonaToDisplay> _personas;
+        private PersonaToDisplay? _selectedItem;
         private bool _isEdit;
         private string _baseEndpointUrl = "personas";
+        private List<PlanDto> _planes;
+        private List<EspecialidadDto> _especialidades;
 
         public AdminPersonas()
         {
             InitializeComponent();
-            
+
+            _ = LoadDropdownListsAsync();
             CheckActions();
         }
 
         private async Task LoadPersonasAsync()
         {
-            var allPersonas = await HttpClientHelper.GetAsync<List<PersonaDto>>(_baseEndpointUrl);
+            var allPersonas = await HttpClientHelper.GetAsync<List<PersonaToDisplay>>(_baseEndpointUrl);
             if (allPersonas is not null)
             {
                 _personas = allPersonas;
             }
         }
 
-        private void LoadPersona(PersonaDto persona)
+        private void LoadPersona(PersonaToDisplay persona)
         {
             txtId.Text = persona.Id.ToString();
             txtNombre.Text = persona.Nombre;
@@ -48,13 +52,12 @@ namespace Desktop
             txtTelefono.Text = persona.Telefono;
             txtLegajo.Text = persona.Legajo.ToString();
 
-            // TBD
-            txtFechaNacimientoDay.Text = string.Empty;
-            txtFechaNacimientoMonth.Text = string.Empty;
-            txtFechaNacimientoYear.Text = string.Empty;
+            txtFechaNacimientoDay.Text = persona.FechaNacimiento.Day.ToString();
+            txtFechaNacimientoMonth.Text = persona.FechaNacimiento.Month.ToString();
+            txtFechaNacimientoYear.Text = persona.FechaNacimiento.Year.ToString();
 
-            //cmbPlan
-            //cmbEspecialidad
+            cmbPlan.SelectedIndex = _planes.FindIndex(x => x.Id == persona.PlanId);
+            cmbEspecialidad.SelectedIndex = _especialidades.FindIndex(x => x.Id == persona.EspecialidadId);
         }
 
         private async Task RefreshGridAsync()
@@ -75,13 +78,12 @@ namespace Desktop
             txtTelefono.Text = string.Empty;
             txtLegajo.Text = string.Empty;
 
-            // TBD
             txtFechaNacimientoDay.Text = string.Empty;
             txtFechaNacimientoMonth.Text = string.Empty;
             txtFechaNacimientoYear.Text = string.Empty;
 
-            //cmbPlan
-            //cmbEspecialidad
+            cmbPlan.SelectedIndex = 0;
+            cmbEspecialidad.SelectedIndex = 0;
 
             _isEdit = false;
         }
@@ -91,8 +93,82 @@ namespace Desktop
             btnAddNew.Enabled = !_isEdit;
             btnSave.Enabled = _isEdit;
             btnDelete.Enabled = _isEdit;
+        }
 
-            // TBD: Agregar mas reglas
+        private async Task LoadDropdownListsAsync()
+        {
+            var allPlanes = await HttpClientHelper.GetAsync<List<PlanDto>>("planes");
+            if (allPlanes is not null)
+            {
+                _planes = allPlanes;
+
+                var bindingSource = new BindingSource();
+                bindingSource.DataSource = _planes;
+                cmbPlan.ValueMember = "Id";
+                cmbPlan.DisplayMember = "Descripcion";
+                cmbPlan.DataSource = bindingSource;
+            }
+
+            var allEspecialidades = await HttpClientHelper.GetAsync<List<EspecialidadDto>>("especialidades");
+            if (allEspecialidades is not null)
+            {
+                _especialidades = allEspecialidades;
+
+                var bindingSource = new BindingSource();
+                bindingSource.DataSource = _especialidades;
+                cmbEspecialidad.ValueMember = "Id";
+                cmbEspecialidad.DisplayMember = "Descripcion";
+                cmbEspecialidad.DataSource = bindingSource;
+            }
+        }
+
+        private bool isValidFormForAddAndSave(
+            string nombre,
+            string apellido,
+            string direccion,
+            string email,
+            string telefono,
+            string legajo,
+            string fechaNacimientoDay,
+            string fechaNacimientoMonth,
+            string fechaNacimientoYear,
+            int selectedPlan,
+            int selectedEspecialidad
+            )
+        {
+            // Validate fields
+            var isAnyEmptyValue = string.IsNullOrEmpty(nombre)
+                || string.IsNullOrEmpty(apellido)
+                || string.IsNullOrEmpty(direccion)
+                || string.IsNullOrEmpty(email)
+                || string.IsNullOrEmpty(telefono)
+                || string.IsNullOrEmpty(legajo)
+                || string.IsNullOrEmpty(fechaNacimientoDay)
+                || string.IsNullOrEmpty(fechaNacimientoMonth)
+                || string.IsNullOrEmpty(fechaNacimientoYear)
+                || selectedPlan == -1
+                || selectedEspecialidad == -1;
+            if (isAnyEmptyValue)
+            {
+                MessageBox.Show("Debe completar todos los campos.", "Validacion");
+                return false;
+            }
+
+            var isLegajoValid = int.TryParse(legajo, out _) && legajo.Length == 5;
+            if (!isLegajoValid) {
+                MessageBox.Show("El Legajo debe ser un Numero entero de 5 digitos.", "Validacion");
+                return false;
+            }
+
+            // Validate date values
+            var isFechaNacimientoValidDate = DateFormatHelper.IsValidDate(fechaNacimientoDay, fechaNacimientoMonth, fechaNacimientoYear);
+            if (!isFechaNacimientoValidDate)
+            {
+                MessageBox.Show("La fecha de nacimiento NO es valida. El formato correcto es: DD MM AAA (DD: DÍA; MM: MES: MM; AAAA: AÑO). Valores numericos enteros.", "Validacion");
+                return false;
+            }
+
+            return true;
         }
 
         private async void btnLoad_Click(object sender, EventArgs e)
@@ -103,10 +179,12 @@ namespace Desktop
 
         private async void dgvPersonas_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return;
+
             var selectedItem = _personas[e.RowIndex];
             var selectedItemId = selectedItem.Id;
 
-            var persona = await HttpClientHelper.GetAsync<PersonaDto>($"{_baseEndpointUrl}/{selectedItemId.ToString()}");
+            var persona = await HttpClientHelper.GetAsync<PersonaToDisplay>($"{_baseEndpointUrl}/{selectedItemId.ToString()}");
             if (persona is not null)
             {
                 _selectedItem = persona;
@@ -124,70 +202,130 @@ namespace Desktop
 
         private async void btnAddNew_Click(object sender, EventArgs e)
         {
-            var newItemToAdd = new PersonaCreateRequest
+            var nombre = txtNombre.Text;
+            var apellido = txtApellido.Text;
+            var direccion = txtDireccion.Text;
+            var email = txtEmail.Text;
+            var telefono = txtTelefono.Text;
+            var legajo = txtLegajo.Text;
+
+            var fechaNacimientoDay = txtFechaNacimientoDay.Text;
+            var fechaNacimientoMonth = txtFechaNacimientoMonth.Text;
+            var fechaNacimientoYear = txtFechaNacimientoYear.Text;
+
+            var selectedPlan = cmbPlan.SelectedIndex;
+            var selectedEspecialidad = cmbEspecialidad.SelectedIndex;
+
+            if (isValidFormForAddAndSave(
+                nombre,
+                apellido,
+                direccion,
+                email,
+                telefono,
+                legajo,
+                fechaNacimientoDay,
+                fechaNacimientoMonth,
+                fechaNacimientoYear,
+                selectedPlan,
+                selectedEspecialidad))
             {
-                Nombre = txtNombre.Text,
-                Apellido = txtApellido.Text,
-                Direccion = txtDireccion.Text,
-                Email = txtEmail.Text,
-                Telefono = txtTelefono.Text,
-                Legajo = Int32.Parse(txtLegajo.Text),
+                var newItemToAdd = new PersonaCreateRequest
+                {
+                    Nombre = nombre,
+                    Apellido = apellido,
+                    Direccion = direccion,
+                    Email = email,
+                    Telefono = telefono,
+                    Legajo = int.Parse(legajo),
+                    FechaNacimiento = new DateTime(int.Parse(fechaNacimientoYear), int.Parse(fechaNacimientoMonth), int.Parse(fechaNacimientoDay)),
 
-                // TBD
-                //FechaNac
-                //Plan
-                //Espc
-            };
+                    PlanId = _planes[selectedPlan].Id,
+                    EspecialidadId = _especialidades[selectedEspecialidad].Id,
+                };
 
-            var result = await HttpClientHelper.PostAsync<PersonaResponse>(
-                $"{_baseEndpointUrl}",
-                newItemToAdd);
-            // TBD: Error handling, validar result
+                await HttpClientHelper.PostAsync<PersonaResponse>(
+                    $"{_baseEndpointUrl}",
+                    newItemToAdd);
 
-            CleanForm();
-            await RefreshGridAsync();
+                CleanForm();
+                await RefreshGridAsync();
+            }
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            var itemToUpdate = new PersonaUpdateRequest
+            var id = Guid.Parse(txtId.Text);
+            var nombre = txtNombre.Text;
+            var apellido = txtApellido.Text;
+            var direccion = txtDireccion.Text;
+            var email = txtEmail.Text;
+            var telefono = txtTelefono.Text;
+            var legajo = txtLegajo.Text;
+
+            var fechaNacimientoDay = txtFechaNacimientoDay.Text;
+            var fechaNacimientoMonth = txtFechaNacimientoMonth.Text;
+            var fechaNacimientoYear = txtFechaNacimientoYear.Text;
+
+            var selectedPlan = cmbPlan.SelectedIndex;
+            var selectedEspecialidad = cmbEspecialidad.SelectedIndex;
+
+            if (isValidFormForAddAndSave(
+                nombre,
+                apellido,
+                direccion,
+                email,
+                telefono,
+                legajo,
+                fechaNacimientoDay,
+                fechaNacimientoMonth,
+                fechaNacimientoYear,
+                selectedPlan,
+                selectedEspecialidad))
             {
-                Id = Guid.Parse(txtId.Text),
-                Nombre = txtNombre.Text,
-                Apellido = txtApellido.Text,
-                Direccion = txtDireccion.Text,
-                Email = txtEmail.Text,
-                Telefono = txtTelefono.Text,
-                Legajo = Int32.Parse(txtLegajo.Text),
+                var dialogResult = MessageBox.Show($"Guardar cambios sobre Persona Id: {id}?", "Guardar", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    var itemToUpdate = new PersonaUpdateRequest
+                    {
+                        Id = id,
+                        Nombre = nombre,
+                        Apellido = apellido,
+                        Direccion = direccion,
+                        Email = email,
+                        Telefono = telefono,
+                        Legajo = int.Parse(legajo),
+                        FechaNacimiento = new DateTime(int.Parse(fechaNacimientoYear), int.Parse(fechaNacimientoMonth), int.Parse(fechaNacimientoDay)),
 
-                // TBD
-                //FechaNac
-                //Plan
-                //Espc
-            };
+                        PlanId = _planes[selectedPlan].Id,
+                        EspecialidadId = _especialidades[selectedEspecialidad].Id,
+                    };
 
-            var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
-                $"{_baseEndpointUrl}",
-                itemToUpdate);
-            // TBD: Error handling, validar result
+                    var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
+                        $"{_baseEndpointUrl}",
+                        itemToUpdate);
 
-            _isEdit = false;
+                    _isEdit = false;
 
-            CleanForm();
-            await RefreshGridAsync();
+                    CleanForm();
+                    await RefreshGridAsync();
+                }
+            }
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
             var itemToDelete = _selectedItem.Id;
 
-            var result = await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
+            var dialogResult = MessageBox.Show($"Borrar Persona Id: {itemToDelete}?", "Borrar", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
                 $"{_baseEndpointUrl}",
                 itemToDelete);
-            // TBD: Error handling, validar results
 
-            CleanForm();
-            await RefreshGridAsync();
+                CleanForm();
+                await RefreshGridAsync();
+            }
         }
 
         private void btnCancelClean_Click(object sender, EventArgs e)
@@ -196,5 +334,21 @@ namespace Desktop
             CleanForm();
             CheckActions();
         }
+    }
+
+    public class PersonaToDisplay
+    {
+        public Guid Id { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Direccion { get; set; }
+        public string Email { get; set; }
+        public string Telefono { get; set; }
+        public int Legajo { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public Guid PlanId { get; set; }
+        public string PlanDescripcion { get; set; }
+        public Guid EspecialidadId { get; set; }
+        public string EspecialidadDescripcion { get; set; }
     }
 }
