@@ -16,29 +16,35 @@ namespace Desktop
 {
     public partial class AdminPlanes : Form
     {
-        private List<PlanDto> _planes;
-        private PlanDto? _selectedItem;
+        private List<PlanToDisplay> _planes;
+        private PlanToDisplay? _selectedItem;
         private bool _isEdit;
         private string _baseEndpointUrl = "planes";
+        private List<EspecialidadDto> _especialidades;
+
         public AdminPlanes()
         {
             InitializeComponent();
+
+            _ = LoadDropdownListsAsync();
             CheckActions();
         }
 
         private async Task LoadPlanesAsync()
         {
-            var all = await HttpClientHelper.GetAsync<List<PlanDto>>(_baseEndpointUrl);
+            var all = await HttpClientHelper.GetAsync<List<PlanToDisplay>>(_baseEndpointUrl);
             if (all is not null)
             {
                 _planes = all;
             }
         }
 
-        private void LoadPlan(PlanDto dto)
+        private void LoadPlan(PlanToDisplay dto)
         {
             txtId.Text = dto.Id.ToString();
             txtDescripcion.Text = dto.Descripcion;
+
+            cmbEspecialidad.SelectedIndex = _especialidades.FindIndex(x => x.Id == dto.EspecialidadId);
         }
 
         private async Task RefreshGridAsync()
@@ -66,6 +72,21 @@ namespace Desktop
             // TBD: Agregar mas reglas
         }
 
+        private async Task LoadDropdownListsAsync()
+        {
+            var allEspecialidades = await HttpClientHelper.GetAsync<List<EspecialidadDto>>("especialidades");
+            if (allEspecialidades is not null)
+            {
+                _especialidades = allEspecialidades;
+
+                var bindingSource = new BindingSource();
+                bindingSource.DataSource = _especialidades;
+                cmbEspecialidad.ValueMember = "Id";
+                cmbEspecialidad.DisplayMember = "Descripcion";
+                cmbEspecialidad.DataSource = bindingSource;
+            }
+        }
+
         private async void btnLoad_Click(object sender, EventArgs e)
         {
             _isEdit = false;
@@ -74,10 +95,12 @@ namespace Desktop
 
         private async void dgvPlanes_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return;
+
             var selectedItem = _planes[e.RowIndex];
             var selectedItemId = selectedItem.Id;
 
-            var plan = await HttpClientHelper.GetAsync<PlanDto>($"{_baseEndpointUrl}/{selectedItemId.ToString()}");
+            var plan = await HttpClientHelper.GetAsync<PlanToDisplay>($"{_baseEndpointUrl}/{selectedItemId.ToString()}");
             if (plan is not null)
             {
                 _selectedItem = plan;
@@ -95,50 +118,80 @@ namespace Desktop
 
         private async void btnAddNew_Click(object sender, EventArgs e)
         {
-            var newItemToAdd = new PlanCreateRequest
+            var descripcion = txtDescripcion.Text;
+
+            if (string.IsNullOrEmpty(descripcion))
             {
-                Descripcion = txtDescripcion.Text,
-            };
+                MessageBox.Show("Debe completar todos los campos.", "Validacion");
+                return;
+            }
 
-            var result = await HttpClientHelper.PostAsync<PlanResponse>(
-                $"{_baseEndpointUrl}",
-                newItemToAdd);
-            // TBD: Error handling, validar result
+            if (!string.IsNullOrEmpty(descripcion))
+            {
+                var selectedEspecialidad = cmbEspecialidad.SelectedIndex;
+                var newItemToAdd = new PlanCreateRequest
+                {
+                    Descripcion = txtDescripcion.Text,
+                    EspecialidadId = _especialidades[selectedEspecialidad].Id,
+                };
 
-            CleanForm();
-            await RefreshGridAsync();
+                await HttpClientHelper.PostAsync<PlanResponse>(
+                    $"{_baseEndpointUrl}",
+                    newItemToAdd);
+
+                CleanForm();
+                await RefreshGridAsync();
+            }
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            var itemToUpdate = new PlanUpdateRequest
+            var id = Guid.Parse(txtId.Text);
+            var descripcion = txtDescripcion.Text;
+
+            if (string.IsNullOrEmpty(descripcion))
             {
-                Id = Guid.Parse(txtId.Text),
-                Descripcion = txtDescripcion.Text,
-            };
+                MessageBox.Show("Debe completar todos los campos.", "Validacion");
+                return;
+            }
 
-            var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
-                $"{_baseEndpointUrl}",
-                itemToUpdate);
-            // TBD: Error handling, validar result
+            if (!string.IsNullOrEmpty(descripcion))
+            {
+                var dialogResult = MessageBox.Show($"Guardar cambios sobre Plan Id: {id}?", "Guardar", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    var itemToUpdate = new PlanUpdateRequest
+                    {
+                        Id = id,
+                        Descripcion = txtDescripcion.Text,
+                    };
 
-            _isEdit = false;
+                    await HttpClientHelper.PutAsync<BooleanResultResponse>(
+                        $"{_baseEndpointUrl}",
+                        itemToUpdate);
 
-            CleanForm();
-            await RefreshGridAsync();
+                    _isEdit = false;
+
+                    CleanForm();
+                    await RefreshGridAsync();
+                }
+            }
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
             var itemToDelete = _selectedItem.Id;
 
-            var result = await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
+            var dialogResult = MessageBox.Show($"Borrar Plan Id: {itemToDelete}?", "Borrar", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
                 $"{_baseEndpointUrl}",
                 itemToDelete);
-            // TBD: Error handling, validar results
 
-            CleanForm();
-            await RefreshGridAsync();
+                CleanForm();
+                await RefreshGridAsync();
+            }
         }
 
         private void btnCancelClean_Click(object sender, EventArgs e)
@@ -147,5 +200,13 @@ namespace Desktop
             CleanForm();
             CheckActions();
         }
+    }
+
+    public class PlanToDisplay
+    {
+        public Guid Id { get; set; }
+        public string Descripcion { get; set; }
+        public Guid EspecialidadId { get; set; }
+        public string EspecialidadDescripcion { get; set; }
     }
 }

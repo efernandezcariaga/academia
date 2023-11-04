@@ -76,6 +76,8 @@ namespace Desktop
 
         private async void dgvEspecialidades_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return;
+
             var selectedItem = _especialidades[e.RowIndex];
             var selectedItemId = selectedItem.Id;
 
@@ -97,50 +99,79 @@ namespace Desktop
 
         private async void btnAddNew_Click(object sender, EventArgs e)
         {
-            var newItemToAdd = new EspecialidadCreateRequest
+            var descripcion = txtDescripcion.Text;
+
+            if (string.IsNullOrEmpty(descripcion))
             {
-                Descripcion = txtDescripcion.Text,
-            };
+                MessageBox.Show("Debe completar todos los campos.", "Validacion");
+                return;
+            }
 
-            var result = await HttpClientHelper.PostAsync<EspecialidadResponse>(
-                $"{_baseEndpointUrl}",
-                newItemToAdd);
-            // TBD: Error handling, validar result
+            if (!string.IsNullOrEmpty(descripcion))
+            {
+                var newItemToAdd = new EspecialidadCreateRequest
+                {
+                    Descripcion = txtDescripcion.Text,
+                };
 
-            CleanForm();
-            await RefreshGridAsync();
+                await HttpClientHelper.PostAsync<EspecialidadResponse>(
+                    $"{_baseEndpointUrl}",
+                    newItemToAdd);
+
+                CleanForm();
+                await RefreshGridAsync();
+            }
+
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            var itemToUpdate = new EspecialidadUpdateRequest
+            var id = Guid.Parse(txtId.Text);
+            var descripcion = txtDescripcion.Text;
+
+            if (string.IsNullOrEmpty(descripcion))
             {
-                Id = Guid.Parse(txtId.Text),
-                Descripcion = txtDescripcion.Text,
-            };
+                MessageBox.Show("Debe completar todos los campos.", "Validacion");
+                return;
+            }
 
-            var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
-                $"{_baseEndpointUrl}",
-                itemToUpdate);
-            // TBD: Error handling, validar result
+            if (!string.IsNullOrEmpty(descripcion))
+            {
+                var dialogResult = MessageBox.Show($"Guardar cambios sobre Especialidad Id: {id}?", "Guardar", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    var itemToUpdate = new EspecialidadUpdateRequest
+                    {
+                        Id = id,
+                        Descripcion = txtDescripcion.Text,
+                    };
 
-            _isEdit = false;
+                    await HttpClientHelper.PutAsync<BooleanResultResponse>(
+                        $"{_baseEndpointUrl}",
+                        itemToUpdate);
 
-            CleanForm();
-            await RefreshGridAsync();
+                    _isEdit = false;
+
+                    CleanForm();
+                    await RefreshGridAsync();
+                }
+            }
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
             var itemToDelete = _selectedItem.Id;
 
-            var result = await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
+            var dialogResult = MessageBox.Show($"Borrar Especialidad Id: {itemToDelete}?", "Borrar", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                await HttpClientHelper.DeleteAsync<BooleanResultResponse>(
                 $"{_baseEndpointUrl}",
                 itemToDelete);
-            // TBD: Error handling, validar results
 
-            CleanForm();
-            await RefreshGridAsync();
+                CleanForm();
+                await RefreshGridAsync();
+            }
         }
 
         private void btnCancelClean_Click(object sender, EventArgs e)

@@ -44,6 +44,15 @@ namespace Services.Implementations
             return await _context.Especialidades.Select(x => x.MapDomainToDto()).ToListAsync(ct);
         }
 
+        public async Task<List<EspecialidadDto>> GetAllByPlanIdAsync(Guid planId, CancellationToken ct)
+        {
+            return await _context.Especialidades.Join(
+                _context.Planes,
+                e => e.Id,
+                p => p.Especialidad.Id,
+                (e, p) => e.MapDomainToDto()).ToListAsync(ct);
+        }
+
         public async Task<EspecialidadDto> GetByIdAsync(Guid id, CancellationToken ct)
         {
             var especialidadById = await _context.Especialidades.FirstOrDefaultAsync(x=>x.Id == id, ct);

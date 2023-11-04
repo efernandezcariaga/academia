@@ -21,7 +21,7 @@ public class AcademiaContext : DbContext
         //var server = @"DESKTOP-DO7U7JF\SQLEXPRESS";
         var server = @".\SQLEXPRESS";
 
-        var databaseName = "AcademiaDB_1";
+        var databaseName = "AcademiaDB";
         //var userId = "net";
         var userId = "sa";
         //var password = "net";

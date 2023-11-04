@@ -198,7 +198,9 @@
             // txtFechaNacimientoDay
             // 
             txtFechaNacimientoDay.Location = new Point(141, 430);
+            txtFechaNacimientoDay.MaxLength = 2;
             txtFechaNacimientoDay.Name = "txtFechaNacimientoDay";
+            txtFechaNacimientoDay.PlaceholderText = "DD";
             txtFechaNacimientoDay.Size = new Size(59, 23);
             txtFechaNacimientoDay.TabIndex = 17;
             // 
@@ -232,19 +234,24 @@
             // txtFechaNacimientoMonth
             // 
             txtFechaNacimientoMonth.Location = new Point(206, 430);
+            txtFechaNacimientoMonth.MaxLength = 2;
             txtFechaNacimientoMonth.Name = "txtFechaNacimientoMonth";
+            txtFechaNacimientoMonth.PlaceholderText = "MM";
             txtFechaNacimientoMonth.Size = new Size(59, 23);
             txtFechaNacimientoMonth.TabIndex = 21;
             // 
             // txtFechaNacimientoYear
             // 
             txtFechaNacimientoYear.Location = new Point(271, 430);
+            txtFechaNacimientoYear.MaxLength = 4;
             txtFechaNacimientoYear.Name = "txtFechaNacimientoYear";
+            txtFechaNacimientoYear.PlaceholderText = "AAAA";
             txtFechaNacimientoYear.Size = new Size(59, 23);
             txtFechaNacimientoYear.TabIndex = 22;
             // 
             // cmbPlan
             // 
+            cmbPlan.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPlan.FormattingEnabled = true;
             cmbPlan.Location = new Point(141, 459);
             cmbPlan.Name = "cmbPlan";
@@ -253,6 +260,7 @@
             // 
             // cmbEspecialidad
             // 
+            cmbEspecialidad.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbEspecialidad.FormattingEnabled = true;
             cmbEspecialidad.Location = new Point(142, 488);
             cmbEspecialidad.Name = "cmbEspecialidad";
