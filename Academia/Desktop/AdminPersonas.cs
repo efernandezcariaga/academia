@@ -142,7 +142,8 @@ namespace Desktop
                 || string.IsNullOrEmpty(direccion)
                 || string.IsNullOrEmpty(email)
                 || string.IsNullOrEmpty(telefono)
-                || string.IsNullOrEmpty(legajo)
+                // VALIDACION ANULADA PARA TESTEO DE EXCEPTION DESDE EL SERVER
+                // || string.IsNullOrEmpty(legajo)
                 || string.IsNullOrEmpty(fechaNacimientoDay)
                 || string.IsNullOrEmpty(fechaNacimientoMonth)
                 || string.IsNullOrEmpty(fechaNacimientoYear)
@@ -154,11 +155,12 @@ namespace Desktop
                 return false;
             }
 
-            var isLegajoValid = int.TryParse(legajo, out _) && legajo.Length == 5;
-            if (!isLegajoValid) {
-                MessageBox.Show("El Legajo debe ser un Numero entero de 5 digitos.", "Validacion");
-                return false;
-            }
+            // VALIDACION ANULADA PARA TESTEO DE EXCEPTION DESDE EL SERVER
+            // var isLegajoValid = int.TryParse(legajo, out _) && legajo.Length == 5;
+            //if (!isLegajoValid) {
+            //    MessageBox.Show("El Legajo debe ser un Numero entero de 5 digitos.", "Validacion");
+            //    return false;
+            //}
 
             // Validate date values
             var isFechaNacimientoValidDate = DateFormatHelper.IsValidDate(fechaNacimientoDay, fechaNacimientoMonth, fechaNacimientoYear);
@@ -236,24 +238,33 @@ namespace Desktop
                     Direccion = direccion,
                     Email = email,
                     Telefono = telefono,
-                    Legajo = int.Parse(legajo),
+                    Legajo = legajo,
                     FechaNacimiento = new DateTime(int.Parse(fechaNacimientoYear), int.Parse(fechaNacimientoMonth), int.Parse(fechaNacimientoDay)),
 
                     PlanId = _planes[selectedPlan].Id,
                     EspecialidadId = _especialidades[selectedEspecialidad].Id,
                 };
 
-                await HttpClientHelper.PostAsync<PersonaResponse>(
-                    $"{_baseEndpointUrl}",
-                    newItemToAdd);
+                try
+                {
+                    await HttpClientHelper.PostAsync<PersonaResponse>(
+                        $"{_baseEndpointUrl}",
+                        newItemToAdd);
 
-                CleanForm();
-                await RefreshGridAsync();
+                    CleanForm();
+                    await RefreshGridAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Validacion (Server)");
+                }
             }
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
+            if (!_isEdit) return;
+
             var id = Guid.Parse(txtId.Text);
             var nombre = txtNombre.Text;
             var apellido = txtApellido.Text;
@@ -293,21 +304,28 @@ namespace Desktop
                         Direccion = direccion,
                         Email = email,
                         Telefono = telefono,
-                        Legajo = int.Parse(legajo),
+                        Legajo = legajo,
                         FechaNacimiento = new DateTime(int.Parse(fechaNacimientoYear), int.Parse(fechaNacimientoMonth), int.Parse(fechaNacimientoDay)),
 
                         PlanId = _planes[selectedPlan].Id,
                         EspecialidadId = _especialidades[selectedEspecialidad].Id,
                     };
 
-                    var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
-                        $"{_baseEndpointUrl}",
-                        itemToUpdate);
+                    try
+                    {
+                        var result = await HttpClientHelper.PutAsync<BooleanResultResponse>(
+                            $"{_baseEndpointUrl}",
+                            itemToUpdate);
 
-                    _isEdit = false;
+                        _isEdit = false;
 
-                    CleanForm();
-                    await RefreshGridAsync();
+                        CleanForm();
+                        await RefreshGridAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Validacion (Server)");
+                    }
                 }
             }
         }

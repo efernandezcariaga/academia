@@ -22,25 +22,23 @@ public class AcademiaContext : DbContext
         var server = @".\SQLEXPRESS";
 
         var databaseName = "AcademiaDB";
-        //var userId = "net";
-        var userId = "sa";
-        //var password = "net";
-        var password = "";
-        
-        //var connectionString = @$"
-        //        Server=${server};
-        //        Initial Catalog={databaseName};
-        //        User Id={userId};
-        //        Password={password};
-        //        Database={databaseName};
-        //        TrustServerCertificate=True;";
+        var userId = "net";
+        var password = "net";
 
         var connectionString = @$"
                 Server={server};
                 Initial Catalog={databaseName};
+                User Id={userId};
+                Password={password};
                 Database={databaseName};
-                Integrated Security=True;
                 TrustServerCertificate=True;";
+
+        //var connectionString = @$"
+        //        Server={server};
+        //        Initial Catalog={databaseName};
+        //        Database={databaseName};
+        //        Integrated Security=True;
+        //        TrustServerCertificate=True;";
 
         optionsBuilder.UseSqlServer(connectionString);
         

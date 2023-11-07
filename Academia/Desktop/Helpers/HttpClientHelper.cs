@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -19,10 +20,7 @@ namespace Desktop.Helpers
 
             var result = await _httpClient.GetAsync($"{_apiUrl}/{uri}");
 
-            if (!result.IsSuccessStatusCode)
-            {
-                return null;
-            }
+            if (!result.IsSuccessStatusCode) await HandleServerErrorResponsesAsync(result);
 
             return await FromHttpResponseMessage<T>(result);
         }
@@ -36,10 +34,7 @@ namespace Desktop.Helpers
 
             var result = await _httpClient.PostAsync($"{_apiUrl}/{uri}", content);
 
-            if (!result.IsSuccessStatusCode)
-            {
-                return null;
-            }
+            if (!result.IsSuccessStatusCode) await HandleServerErrorResponsesAsync(result);
 
             return await FromHttpResponseMessage<T>(result);
         }
@@ -53,10 +48,7 @@ namespace Desktop.Helpers
 
             var result = await _httpClient.PutAsync($"{_apiUrl}/{uri}", content);
 
-            if (!result.IsSuccessStatusCode)
-            {
-                return null;
-            }
+            if (!result.IsSuccessStatusCode) await HandleServerErrorResponsesAsync(result);
 
             return await FromHttpResponseMessage<T>(result);
         }
@@ -68,10 +60,7 @@ namespace Desktop.Helpers
 
             var result = await _httpClient.DeleteAsync($"{_apiUrl}/{uri}/{id}");
 
-            if (!result.IsSuccessStatusCode)
-            {
-                return null;
-            }
+            if (!result.IsSuccessStatusCode) await HandleServerErrorResponsesAsync(result);
 
             return await FromHttpResponseMessage<T>(result);
         }
@@ -90,5 +79,26 @@ namespace Desktop.Helpers
         {
             return new StringContent(JsonSerializer.Serialize(obj), Encoding.UTF8, "application/json");
         }
+
+        private static async Task HandleServerErrorResponsesAsync (HttpResponseMessage responseMessage)
+        {
+            var serverErrorResponse = JsonSerializer.Deserialize<ServerErrorResponse>(await responseMessage.Content.ReadAsStringAsync(), new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            switch (responseMessage.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new Exception($"Server Error: {serverErrorResponse?.Message}");
+                case HttpStatusCode.InternalServerError:
+                    throw new Exception("Server Error: Error interno del server. Vuelva a intentarlo.");
+            }
+        }
+    }
+
+    public class ServerErrorResponse
+    {
+        public string Message { get; set; }
     }
 }

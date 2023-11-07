@@ -11,6 +11,8 @@ namespace Services.Implementations;
 public class PersonaService : IPersonaService
 {
     private readonly AcademiaContext _context;
+    private const string MENSAJE_LEGAJO_INVALIDO = "El Legajo NO es valido. No se ha podido guardar la Persona.";
+    private const string MENSAJE_ERROR_SERVIDOR = "Ha ocurrido un error interno del servidor.";
 
     public PersonaService(AcademiaContext context)
     {
@@ -19,17 +21,28 @@ public class PersonaService : IPersonaService
 
     public async Task<PersonaDto> CreatePersonaAsync(PersonaCreateRequest request, CancellationToken ct)
     {
-        var plan = await _context.Planes.FirstAsync(x => x.Id == request.PlanId);
-        var especialidad = await _context.Especialidades.FirstAsync(x => x.Id == request.EspecialidadId);
-        plan.Especialidad = especialidad;
+        try
+        {
+            var plan = await _context.Planes.FirstAsync(x => x.Id == request.PlanId);
+            var especialidad = await _context.Especialidades.FirstAsync(x => x.Id == request.EspecialidadId);
+            plan.Especialidad = especialidad;
 
-        var personaCreated = request.MapRequestToDomain();
-        personaCreated.Plan = plan;
+            var personaCreated = request.MapRequestToDomain();
+            personaCreated.Plan = plan;
 
-        await _context.Personas.AddAsync(personaCreated);
-        await _context.SaveChangesAsync();
+            await _context.Personas.AddAsync(personaCreated);
+            await _context.SaveChangesAsync();
 
-        return personaCreated.MapDomainToDto();
+            return personaCreated.MapDomainToDto();
+        }
+        catch (FormatException)
+        {
+            throw new Exception(MENSAJE_LEGAJO_INVALIDO);
+        }
+        catch (Exception)
+        {
+            throw new Exception(MENSAJE_ERROR_SERVIDOR);
+        }
     }
 
     public async Task<bool> DeletePersonaAsync(Guid id, CancellationToken ct)
@@ -62,21 +75,32 @@ public class PersonaService : IPersonaService
 
         if (personaToUpdate == null) return false;
 
-        personaToUpdate.Nombre = request.Nombre;
-        personaToUpdate.Apellido = request.Apellido;
-        personaToUpdate.Direccion = request.Direccion;
-        personaToUpdate.Telefono = request.Telefono;
-        personaToUpdate.Email = request.Email;
-        personaToUpdate.Legajo = request.Legajo;
-        personaToUpdate.FechaNacimiento = request.FechaNacimiento;
+        try
+        {
+            personaToUpdate.Nombre = request.Nombre;
+            personaToUpdate.Apellido = request.Apellido;
+            personaToUpdate.Direccion = request.Direccion;
+            personaToUpdate.Telefono = request.Telefono;
+            personaToUpdate.Email = request.Email;
+            personaToUpdate.Legajo = int.Parse(request.Legajo);
+            personaToUpdate.FechaNacimiento = request.FechaNacimiento;
 
-        var plan = await _context.Planes.FirstAsync(x => x.Id == request.PlanId);
-        var especialidad = await _context.Especialidades.FirstAsync(x => x.Id == request.EspecialidadId);
-        plan.Especialidad = especialidad;
+            var plan = await _context.Planes.FirstAsync(x => x.Id == request.PlanId);
+            var especialidad = await _context.Especialidades.FirstAsync(x => x.Id == request.EspecialidadId);
+            plan.Especialidad = especialidad;
 
-        personaToUpdate.Plan = plan;
+            personaToUpdate.Plan = plan;
 
-        await _context.SaveChangesAsync();
-        return true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (FormatException)
+        {
+            throw new Exception(MENSAJE_LEGAJO_INVALIDO);
+        }
+        catch (Exception)
+        {
+            throw new Exception(MENSAJE_ERROR_SERVIDOR);
+        }
     }
 }

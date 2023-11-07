@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Servicios\Servi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.DTO", "WebApi.DTO\WebApi.DTO.csproj", "{661000C0-B361-4DE3-BF1D-1E2928C05E92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.csproj", "{70E01BB9-DB8B-4123-8BEE-7DB520190E13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "Desktop\Desktop.csproj", "{70E01BB9-DB8B-4123-8BEE-7DB520190E13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWeb", "BlazorWeb\BlazorWeb.csproj", "{30C78537-5B81-4101-B190-DB2C7717C320}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{70E01BB9-DB8B-4123-8BEE-7DB520190E13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70E01BB9-DB8B-4123-8BEE-7DB520190E13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70E01BB9-DB8B-4123-8BEE-7DB520190E13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30C78537-5B81-4101-B190-DB2C7717C320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30C78537-5B81-4101-B190-DB2C7717C320}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30C78537-5B81-4101-B190-DB2C7717C320}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C78537-5B81-4101-B190-DB2C7717C320}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

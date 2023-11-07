@@ -56,7 +56,7 @@ namespace WebApi.DTO.Mappers
                 Nombre = request.Nombre,
                 Direccion = request.Direccion,
                 Email = request.Email,
-                Legajo = request.Legajo,
+                Legajo = int.Parse(request.Legajo),
                 Telefono = request.Telefono,
                 FechaNacimiento = request.FechaNacimiento,
             };

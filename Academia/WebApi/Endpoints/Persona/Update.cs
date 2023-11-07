@@ -19,9 +19,18 @@ namespace WebApi.Endpoints.Persona
         [HttpPut("api/personas")]
         public async override Task<ActionResult<BooleanResultResponse>> HandleAsync(PersonaUpdateRequest request, CancellationToken cancellationToken = default)
         {
-            var result = await _personaService.UpdatePersonaAsync(request, cancellationToken);
+            try
+            {
+                var result = await _personaService.UpdatePersonaAsync(request, cancellationToken);
 
-            return Ok(new BooleanResultResponse { Result = result });
+                return Ok(new BooleanResultResponse { Result = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

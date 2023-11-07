@@ -13,7 +13,7 @@ namespace WebApi.DTO.Request
         public string Direccion { get; set; }
         public string Email { get; set; }
         public string Telefono { get; set; }
-        public int Legajo { get; set; }
+        public string Legajo { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public Guid PlanId { get; set; }
         public Guid EspecialidadId { get; set; }

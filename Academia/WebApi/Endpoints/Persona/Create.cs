@@ -20,9 +20,19 @@ namespace WebApi.Endpoints.Persona
         [HttpPost("api/personas")]
         public async override Task<ActionResult<PersonaResponse>> HandleAsync(PersonaCreateRequest request, CancellationToken cancellationToken = default)
         {
-            var personaCreated = await _personaService.CreatePersonaAsync(request, cancellationToken);
+            try
+            {
+                var personaCreated = await _personaService.CreatePersonaAsync(request, cancellationToken);
 
-            return personaCreated.MapDtoToResponse();
+                return personaCreated.MapDtoToResponse();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
         }
     }
 }
